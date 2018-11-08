@@ -4,7 +4,7 @@ const MARGIN = {
   top: 40,
   right: 40,
   bottom: 40,
-  left: 40
+  left: 60
 };
 // const PADDING = {
 //   top: 60,
@@ -37,6 +37,7 @@ class BarChart {
       .attr("transform", "translate(" + MARGIN.left + "," + MARGIN.top + ")");
     this.g.append("g")
       .attr("class", "axis axis--x");
+
     window.addEventListener("resize", this.draw());
   }
 
@@ -48,11 +49,15 @@ class BarChart {
 
     this.svg.append("text")
       .attr("x", (width / 2))
-      .attr("y", MARGIN.top/2)
+      .attr("y", MARGIN.top / 2)
       .attr("text-anchor", "middle")
       .style("font-size", "16px")
       .text(this.titleText);
-
+    this.svg.append("text")
+      .attr("y", (height / 2) / 2)
+      .attr("x", (MARGIN.left / 2) / 2)
+      .attr("dy", "0.71em")
+      .text("Sales");
 
 
     this.x.rangeRound([0, width]);
@@ -102,6 +107,22 @@ class BarChart {
       .attr("width", this.x.bandwidth())
       .attr("height", (d) => {
         return Math.abs((height / 2) - this.y(d.value));
+      });
+
+    //BAR LABELS
+    this.g.selectAll("text.bar")
+      .data(this.data)
+      .enter().append("text")
+      .attr("class", "bar")
+      .attr("text-anchor", "middle")
+      .attr("x", (d) => {
+        return this.x(d.key) + (this.x.bandwidth()/2);
+      })
+      .attr("y", (d) => {
+        return this.y(d.value) - 5;
+      })
+      .text(function(d) {
+        return Math.round(Number(d.value));
       });
 
     // EXIT
