@@ -6,35 +6,13 @@ html {
   margin: 0;
 }
 
-.bars {
-  fill: $color-primary-2;
-  opacity: 0.8;
+text {
+  font-family: sans-serif;
 }
 
-.svg-container {
-  // display: inline-block;
-  // position: relative;
-  width: 100%;
-  // padding-bottom: 100%;
-  /* aspect ratio */
-  vertical-align: top;
-  overflow: hidden;
+.bar {
+  fill: lime;
 }
-
-.svg-content-responsive {
-  // display: inline-block;
-  // position: absolute;
-  top: 10px;
-  left: 0;
-}
-
-.axis line,
-.axis path {
-  fill: none;
-  stroke: #000;
-  shape-rendering: crispEdges;
-}
-
 
 #chart1,
 #chart2,
@@ -46,5 +24,4 @@ html {
 }
 
 #main-container {
-  display: flex;
 }
