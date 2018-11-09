@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 import _ from 'lodash';
 import moment from 'moment';
 
-import makeBarChart from './bar'; // name is irrelevant since it is a default export
+import makeBarChart from './VerticalBarChart'; // name is irrelevant since it is a default export
 
 require('./main.scss'); // will build CSS from SASS 3 file
 
@@ -73,7 +73,7 @@ d3.csv("/data/data.csv", (d) => {
   });
   const months = _.sortBy(_.uniq(_.map(dataFromYear, 'yearMonth')), month => moment(month));
   let chartData = [];
-  months.forEach((yearMonth) => {
+  months.forEach((yearMonth, index) => {
     const dataFromMonth = _.filter(dataFromYear, {
       'yearMonth': yearMonth
     });
@@ -83,7 +83,8 @@ d3.csv("/data/data.csv", (d) => {
     });
     chartData.push({
       key: moment(yearMonth).format("MMM"),
-      value: Number(sum)
+      value: Number(sum),
+      isForecast: index > months.length - 4 ? true : false
     });
   });
   window.addEventListener('resize', makeBarChart(newChart.id, chartData, "Sales - 2012"));

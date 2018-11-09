@@ -23,7 +23,12 @@ class BarChart {
     this.data = data;
     this.titleText = titleText;
     this.x = d3.scaleBand().domain(this.getKeys(data)).padding(0.1);
-    this.bothPositiveAndNegative = false;
+    this.bothPositiveAndNegativeValues = false;
+    this.forecastKeys = _.filter(this.data, {
+      'isForecast': true
+    }).map((d) => {
+      return d.key;
+    });
     const minValue = this.getMinValue(data);
     const maxValue = this.getMaxValue(data);
     const domainLimit = Math.abs(maxValue) >= Math.abs(minValue) ? Math.abs(maxValue) : Math.abs(minValue);
@@ -36,8 +41,8 @@ class BarChart {
     if (maxValue <= 0) {
       maxLimit = 0;
     }
-    if(minValue < 0 && maxValue > 0){
-      this.bothPositiveAndNegative = true;
+    if (minValue < 0 && maxValue > 0) {
+      this.bothPositiveAndNegativeValues = true;
       svgElement.setAttribute("height", svgElement.clientHeight * 2);
     }
 
@@ -58,7 +63,7 @@ class BarChart {
       width = bounds.width - MARGIN.left - MARGIN.right,
       height = bounds.height - MARGIN.top - MARGIN.bottom;
 
-    const yOrigin = this.bothPositiveAndNegative ? height / 2 : height;
+    const yOrigin = this.bothPositiveAndNegativeValues ? height / 2 : height;
 
     this.svg.append("text")
       .attr("x", MARGIN.left * 2)
@@ -67,7 +72,7 @@ class BarChart {
       .style("font-size", "16px")
       .text(this.titleText);
     this.svg.append("text")
-      .attr("y", yOrigin/2)
+      .attr("y", yOrigin / 2)
       .attr("x", (MARGIN.left / 2) / 2)
       .attr("dy", "0.71em")
       .text("Sales");
@@ -105,24 +110,24 @@ class BarChart {
       .attr("height", (d) => {
         return Math.abs(yOrigin - this.y(d.value));
       })
-      .style("fill", "DarkSlateGrey");
+      .style("fill", (d) => {return this.getColor(d.key)});
 
     // UPDATE
-    bars.attr("x", (d) => {
-        return this.x(d.key);
-      })
-      .attr("y", (d) => {
-        if (d.value >= 0) {
-          return this.y(d.value)
-        } else {
-          return yOrigin;
-        };
-      })
-      .attr("width", this.x.bandwidth())
-      .attr("height", (d) => {
-        return Math.abs(yOrigin - this.y(d.value));
-      })
-      .style("fill", "lime");
+    // bars.attr("x", (d) => {
+    //     return this.x(d.key);
+    //   })
+    //   .attr("y", (d) => {
+    //     if (d.value >= 0) {
+    //       return this.y(d.value)
+    //     } else {
+    //       return yOrigin;
+    //     };
+    //   })
+    //   .attr("width", this.x.bandwidth())
+    //   .attr("height", (d) => {
+    //     return Math.abs(yOrigin - this.y(d.value));
+    //   })
+    //   .style("fill", "lime");
 
     //BAR LABELS
     this.g.selectAll("text.bar")
@@ -164,9 +169,17 @@ class BarChart {
     return Math.max(...this.getValues(data));
   }
 
-
   kFormatter(num) {
     return num > 999 ? (num / 1000).toFixed(0) + 'k' : num;
+  }
+
+  getColor(key) {
+    console.log(this.forecastKeys);
+    if(this.forecastKeys.indexOf(key) != -1){
+      return "DarkGrey";
+    } else {
+      return "DarkSlateGrey";
+    }
   }
 }
 
