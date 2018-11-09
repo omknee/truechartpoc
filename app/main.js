@@ -18,18 +18,21 @@ d3.csv("/data/data.csv", (d) => {
       categoryId: d.CategoryID,
       categoryName: d.CategoryName,
       year: d.Year,
+      month: d.Month,
       quantity: Number(d.Quantity),
       sales: Number(d.Sales),
     };
   }
 }).then(function(data) {
+
+  //Sales/Year by Category Charts
   const categoryIds = _.uniq(_.map(data, 'categoryId'));
   categoryIds.forEach((categoryId) => {
     let newChart = document.createElement("svg");
     newChart.id = "chart-" + categoryId;
-    newChart.setAttribute('width', '50%');
+    newChart.setAttribute('width', '300px');
     newChart.setAttribute('height', '500px');
-    // mainContainer.append(newChart);
+    mainContainer.append(newChart);
 
     const categoryData = _.filter(data, {
       'categoryId': categoryId
@@ -55,4 +58,26 @@ d3.csv("/data/data.csv", (d) => {
     chartData = _.sortBy(chartData, cD => cD.key);
     window.addEventListener('resize', makeBarChart(newChart.id, chartData, titleText));
   });
+
+  //Sales/Year Chart (2012)
+  const year = "2012";
+  const dataFromYear = _.filter(data, {
+    'year': year
+  });
+  const months = _.uniq(_.map(dataFromYear, 'month'));
+  let chartData = [];
+  months.forEach((month) => {
+    const dataFromMonth = _.filter(dataFromYear, {
+      'month': month
+    });
+    let sum = 0;
+    dataFromMonth.forEach((cYD) => {
+      sum = sum + Number(cYD.sales);
+    });
+    chartData.push({
+      key: month,
+      value: Number(sum)
+    });
+  });
+  window.addEventListener('resize', makeBarChart("salesMonthChart", chartData, "Sales - 2012"));
 });

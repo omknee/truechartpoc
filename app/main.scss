@@ -10,8 +10,14 @@ text {
   font-family: sans-serif;
 }
 
-.bar {
-  fill: lime;
+// .bar {
+//   fill: lime;
+// }
+
+.tick {
+  line {
+    display: none;
+  }
 }
 
 #chart1,

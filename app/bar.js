@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 
 const MARGIN = {
-  top: 40,
+  top: 50,
   right: 40,
   bottom: 40,
   left: 60
@@ -15,11 +15,6 @@ const MARGIN = {
 // const OUTER_WIDTH = 960;
 // const OUTER_HEIGHT = 500;
 
-// function getRandomInt(min, max) {
-//   min = Math.ceil(min);
-//   max = Math.floor(max);
-//   return Math.floor(Math.random() * (max - min)) + min;
-// }
 
 // ES6 class
 class BarChart {
@@ -28,28 +23,39 @@ class BarChart {
     this.data = data;
     this.titleText = titleText;
     this.x = d3.scaleBand().domain(this.getKeys(data)).padding(0.1);
-    const minValue = this.getMinValue(data) < 0 ? this.getMinValue(data) : 0;
-    const maxValue = this.getMaxValue(data) > 0 ? this.getMaxValue(data) : 0;
+    const minValue = this.getMinValue(data);
+    const maxValue = this.getMaxValue(data);
     const domainLimit = Math.abs(maxValue) >= Math.abs(minValue) ? Math.abs(maxValue) : Math.abs(minValue);
-    this.y = d3.scaleLinear().domain([-domainLimit, domainLimit]);
+    let maxLimit = domainLimit;
+    let minLimit = -domainLimit;
+    let svgElement = document.getElementById(id);
+    if (minValue >= 0) {
+      minLimit = 0;
+      // svgElement.setAttribute("height", svgElement.clientHeight/2);
+    }
+    if (maxValue <= 0) {
+      maxLimit = 0;
+      // svgElement.setAttribute("height", svgElement.clientHeight/2);
+    }
+    this.y = d3.scaleLinear().domain([minLimit, maxLimit]);
     this.svg = d3.select(`#${id}`);
     this.g = this.svg.append("g")
       .attr("transform", "translate(" + MARGIN.left + "," + MARGIN.top + ")");
-    this.g.append("g")
-      .attr("class", "axis axis--x");
 
     window.addEventListener("resize", this.draw());
   }
 
   draw() {
+    this.g.append("g")
+      .attr("class", "axis axis--x");
 
     const bounds = this.svg.node().getBoundingClientRect(),
       width = bounds.width - MARGIN.left - MARGIN.right,
       height = bounds.height - MARGIN.top - MARGIN.bottom;
 
     this.svg.append("text")
-      .attr("x", (width / 2))
-      .attr("y", MARGIN.top / 2)
+      .attr("x", MARGIN.left * 2)
+      .attr("y", MARGIN.top / 4)
       .attr("text-anchor", "middle")
       .style("font-size", "16px")
       .text(this.titleText);
@@ -90,8 +96,12 @@ class BarChart {
       })
       .attr("width", this.x.bandwidth())
       .attr("height", (d) => {
+        // console.log("d.value", d.value);
+        // console.log("this.y(d.value)", this.y(d.value));
+        // console.log("Math.abs((height / 2) - this.y(d.value))", Math.abs((height / 2) - this.y(d.value)));
         return Math.abs((height / 2) - this.y(d.value));
-      });
+      })
+      .style("fill", "DarkSlateGrey");
 
     // UPDATE
     bars.attr("x", (d) => {
@@ -107,7 +117,8 @@ class BarChart {
       .attr("width", this.x.bandwidth())
       .attr("height", (d) => {
         return Math.abs((height / 2) - this.y(d.value));
-      });
+      })
+      .style("fill", "lime");
 
     //BAR LABELS
     this.g.selectAll("text.bar")
@@ -115,14 +126,15 @@ class BarChart {
       .enter().append("text")
       .attr("class", "bar")
       .attr("text-anchor", "middle")
+      .style("fill", "DarkSlateGrey")
       .attr("x", (d) => {
-        return this.x(d.key) + (this.x.bandwidth()/2);
+        return this.x(d.key) + (this.x.bandwidth() / 2);
       })
       .attr("y", (d) => {
         return this.y(d.value) - 5;
       })
-      .text(function(d) {
-        return Math.round(Number(d.value));
+      .text((d) => {
+        return this.kFormatter(Math.round(Number(d.value)));
       });
 
     // EXIT
@@ -147,6 +159,10 @@ class BarChart {
     return Math.max(...this.getValues(data));
   }
 
+
+  kFormatter(num) {
+    return num > 999 ? (num / 1000).toFixed(0) + 'k' : num;
+  }
 
   //   const inner = this.svg.append('g')
   //     .attr('transform', `translate(${MARGIN.left}, ${MARGIN.top})`)
