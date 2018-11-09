@@ -1,5 +1,6 @@
 import * as d3 from 'd3';
 import _ from 'lodash';
+import moment from 'moment';
 
 import makeBarChart from './bar'; // name is irrelevant since it is a default export
 
@@ -8,7 +9,8 @@ require('./main.scss'); // will build CSS from SASS 3 file
 // const chartWidth = 400;
 // const chartHeight = 300;
 
-const mainContainer = document.getElementById("main-container");
+const yearlySalesByCategoryContainer = document.getElementById("yearly-sales-by-category-container");
+const totalSalesByMonth = document.getElementById("total-sales-by-month-container");
 
 let categoriesIds = [];
 
@@ -18,7 +20,7 @@ d3.csv("/data/data.csv", (d) => {
       categoryId: d.CategoryID,
       categoryName: d.CategoryName,
       year: d.Year,
-      month: d.Month,
+      yearMonth: d.YearMonth.replace("_", "-"),
       quantity: Number(d.Quantity),
       sales: Number(d.Sales),
     };
@@ -28,11 +30,11 @@ d3.csv("/data/data.csv", (d) => {
   //Sales/Year by Category Charts
   const categoryIds = _.uniq(_.map(data, 'categoryId'));
   categoryIds.forEach((categoryId) => {
-    let newChart = document.createElement("svg");
-    newChart.id = "chart-" + categoryId;
-    newChart.setAttribute('width', '300px');
-    newChart.setAttribute('height', '500px');
-    mainContainer.append(newChart);
+    let newChart = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    newChart.id = "yearly-sales-by-category-" + categoryId;
+    newChart.setAttribute('width', '250px');
+    newChart.setAttribute('height', '350px');
+    yearlySalesByCategoryContainer.append(newChart);
 
     const categoryData = _.filter(data, {
       'categoryId': categoryId
@@ -56,28 +58,33 @@ d3.csv("/data/data.csv", (d) => {
       });
     });
     chartData = _.sortBy(chartData, cD => cD.key);
-    window.addEventListener('resize', makeBarChart(newChart.id, chartData, titleText));
+    window.addEventListener('retotalSalesByMonthsize', makeBarChart(newChart.id, chartData, titleText));
   });
 
   //Sales/Year Chart (2012)
   const year = "2012";
+  let newChart = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  newChart.id = "total-sales-by-month-" + year;
+  newChart.setAttribute('width', '500px');
+  newChart.setAttribute('height', '350px');
+  totalSalesByMonth.append(newChart);
   const dataFromYear = _.filter(data, {
     'year': year
   });
-  const months = _.uniq(_.map(dataFromYear, 'month'));
+  const months = _.sortBy(_.uniq(_.map(dataFromYear, 'yearMonth')), month => moment(month));
   let chartData = [];
-  months.forEach((month) => {
+  months.forEach((yearMonth) => {
     const dataFromMonth = _.filter(dataFromYear, {
-      'month': month
+      'yearMonth': yearMonth
     });
     let sum = 0;
     dataFromMonth.forEach((cYD) => {
       sum = sum + Number(cYD.sales);
     });
     chartData.push({
-      key: month,
+      key: moment(yearMonth).format("MMM"),
       value: Number(sum)
     });
   });
-  window.addEventListener('resize', makeBarChart("salesMonthChart", chartData, "Sales - 2012"));
+  window.addEventListener('resize', makeBarChart(newChart.id, chartData, "Sales - 2012"));
 });
