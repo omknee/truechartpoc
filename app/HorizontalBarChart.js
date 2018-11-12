@@ -29,7 +29,7 @@ class BarChart {
       });
     }
 
-    this.y = d3.scaleBand().domain(this.getKeys(data)).padding(0.1);
+    this.x = d3.scaleBand().domain(this.getKeys(data)).padding(0.25);
     this.bothPositiveAndNegativeValues = false;
     this.forecastKeys = _.filter(this.data, {
       'isForecast': true
@@ -54,7 +54,7 @@ class BarChart {
     }
 
 
-    this.x = d3.scaleLinear().domain([minLimit, maxLimit]);
+    this.y = d3.scaleLinear().domain([minLimit, maxLimit]);
     this.svg = d3.select(`#${id}`);
     this.g = this.svg.append("g")
       .attr("transform", "translate(" + MARGIN.left + "," + MARGIN.top + ")");
@@ -118,8 +118,9 @@ class BarChart {
         return Math.abs(yOrigin - this.y(d.value));
       })
       .style("fill", (d) => {
-        return this.getColor(d.key)
+        return this.getFillColor(d.key)
       });
+
 
     // UPDATE
     // bars.attr("x", (d) => {
@@ -146,7 +147,7 @@ class BarChart {
       .attr("text-anchor", "middle")
       .style("font-size", "12px")
       .style("font-weight", (d) => {
-        if(d.key.toString().localeCompare("total") != -1){
+        if (d.key.toString().localeCompare("total") != -1) {
           return "bold";
         }
       })
@@ -158,7 +159,7 @@ class BarChart {
         return this.y(d.value) - 5;
       })
       .text((d) => {
-        if(d.key.toString().localeCompare("total") != -1){
+        if (d.key.toString().localeCompare("total") != -1) {
           return this.kFormatter(this.data.map(item => item.value).reduce((prev, next) => prev + next));
         } else {
           return this.kFormatter(Math.round(Number(d.value)));
@@ -191,13 +192,14 @@ class BarChart {
     return num > 999 ? (num / 1000).toFixed(0) + 'k' : num;
   }
 
-  getColor(key) {
+  getFillColor(key) {
     if (this.forecastKeys.indexOf(key) != -1) {
       return "DarkGrey";
     } else {
       return "DarkSlateGrey";
     }
   }
+
 }
 
 // Make bar chart factory function

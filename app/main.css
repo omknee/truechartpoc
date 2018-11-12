@@ -8,6 +8,6 @@ text {
   font-family: sans-serif;
 }
 
-.tick > line {
+.tick>line {
   display: none;
 }
