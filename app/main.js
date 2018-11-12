@@ -2,7 +2,8 @@ import * as d3 from 'd3';
 import _ from 'lodash';
 import moment from 'moment';
 
-import makeBarChart from './VerticalBarChart'; // name is irrelevant since it is a default export
+import VerticalBarChart from './VerticalBarChart';
+import HorizontalBar from './VerticalBarChart';
 
 require('./main.scss'); // will build CSS from SASS 3 file
 
@@ -58,9 +59,8 @@ d3.csv("/data/data.csv", (d) => {
       });
     });
     chartData = _.sortBy(chartData, cD => cD.key);
-    window.addEventListener('retotalSalesByMonthsize', makeBarChart(newChart.id, chartData, titleText));
+    window.addEventListener('retotalSalesByMonthsize', VerticalBarChart(newChart.id, chartData, titleText));
   });
-
   //Sales/Year Chart (2012)
   const year = "2012";
   let newChart = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -87,5 +87,5 @@ d3.csv("/data/data.csv", (d) => {
       isForecast: index > months.length - 4 ? true : false
     });
   });
-  window.addEventListener('resize', makeBarChart(newChart.id, chartData, "Sales - 2012"));
+  window.addEventListener('resize', VerticalBarChart(newChart.id, chartData, "Sales - 2012"));
 });
