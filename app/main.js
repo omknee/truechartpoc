@@ -5,7 +5,7 @@ import moment from 'moment';
 import VerticalBarChart from './VerticalBarChart';
 import HorizontalBar from './VerticalBarChart';
 
-require('./main.scss'); // will build CSS from SASS 3 file
+require('./main.css'); // will build CSS from SASS 3 file
 
 // const chartWidth = 400;
 // const chartHeight = 300;
@@ -15,7 +15,7 @@ const totalSalesByMonth = document.getElementById("total-sales-by-month-containe
 
 let categoriesIds = [];
 
-d3.csv("/data/data.csv", (d) => {
+d3.csv("./data/data.csv", (d) => {
   if (!_.isEmpty(d.CategoryID)) {
     return {
       categoryId: d.CategoryID,

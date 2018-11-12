@@ -24,15 +24,10 @@ module.exports = {
             presets: ['es2015', 'stage-0', 'react']
           }
         },
-        { test: /\.css$/, include: path.resolve(__dirname, 'app'), loader: 'style-loader!css-loader' },
-        { test: /\.scss$/, loader: ExtractTextPlugin.extract('style', 'css?sourceMap!sass?sourceMap')},
-    ]
+        { test: /\.css$/, include: path.resolve(__dirname, 'app'), loader: 'style-loader!css-loader' }    ]
   },
   resolve: {
-    extensions: ['', '.js', '.jsx'],
-  },
-  sassLoader: {
-    includePaths: [ 'app/style' ]
+    extensions: ['*', '.js', '.jsx'],
   },
   plugins: [
     new webpack.optimize.DedupePlugin(),
@@ -49,7 +44,7 @@ module.exports = {
     new ExtractTextPlugin('main.css'),
     new CopyWebpackPlugin([
       { from: './app/index.html', to: 'index.html' },
-      { from: './app/main.scss', to: 'main.css' }
+      { from: './app/main.css', to: 'main.css' }
     ]),
   ]
 };
