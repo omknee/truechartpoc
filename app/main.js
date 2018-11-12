@@ -62,18 +62,18 @@ d3.csv("/data/data.csv", (d) => {
     window.addEventListener('retotalSalesByMonthsize', VerticalBarChart(newChart.id, chartData, titleText));
   });
   //Sales/Year Chart (2012)
-  const year = "2012";
-  let newChart = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  newChart.id = "total-sales-by-month-" + year;
-  newChart.setAttribute('width', '500px');
-  newChart.setAttribute('height', '350px');
-  totalSalesByMonth.append(newChart);
+  const chart1Year = "2012";
+  let chart1Element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  chart1Element.id = "total-sales-by-month-" + chart1Year;
+  chart1Element.setAttribute('width', '500px');
+  chart1Element.setAttribute('height', '350px');
+  totalSalesByMonth.append(chart1Element);
   const dataFromYear = _.filter(data, {
-    'year': year
+    'year': chart1Year
   });
-  const months = _.sortBy(_.uniq(_.map(dataFromYear, 'yearMonth')), month => moment(month));
-  let chartData = [];
-  months.forEach((yearMonth, index) => {
+  const chart1Months = _.sortBy(_.uniq(_.map(dataFromYear, 'yearMonth')), month => moment(month));
+  let chart1Data = [];
+  chart1Months.forEach((yearMonth, index) => {
     const dataFromMonth = _.filter(dataFromYear, {
       'yearMonth': yearMonth
     });
@@ -81,11 +81,21 @@ d3.csv("/data/data.csv", (d) => {
     dataFromMonth.forEach((cYD) => {
       sum = sum + Number(cYD.sales);
     });
-    chartData.push({
+    chart1Data.push({
       key: moment(yearMonth).format("MMM"),
       value: Number(sum),
-      isForecast: index > months.length - 4 ? true : false
+      isForecast: index > chart1Months.length - 4 ? true : false
     });
   });
-  window.addEventListener('resize', VerticalBarChart(newChart.id, chartData, "Sales - 2012"));
+  window.addEventListener('resize', VerticalBarChart(chart1Element.id, chart1Data, "Sales - 2012"));
+  //Sales/Year Chart (2012)
+  // let chart1Element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  // chart2Element.id = "total-sales-by-month-" + chart1Year;
+  // chart2Element.setAttribute('width', '700px');
+  // chart2Element.setAttribute('height', '400px');
+  // totalSalesByMonth.append(chart2Element);
+  // const chart2Categories = _.uniq(_.map(dataFromYear, 'categoryName'));
+  // let chart2Data = [];
+  //
+  // window.addEventListener('resize', VerticalBarChart(chart2Element.id, chart1Data, "Sales - 2012"));
 });

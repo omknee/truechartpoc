@@ -18,11 +18,18 @@ const MARGIN = {
 
 // ES6 class
 class BarChart {
-  constructor(id, data, titleText) {
+  constructor(id, data, titleText, hasTotal = true) {
     this.id = id;
     this.data = data;
     this.titleText = titleText;
-    this.x = d3.scaleBand().domain(this.getKeys(data)).padding(0.1);
+    if (hasTotal) {
+      data.push({
+        key: "Total",
+        value: 0
+      });
+    }
+
+    this.y = d3.scaleBand().domain(this.getKeys(data)).padding(0.1);
     this.bothPositiveAndNegativeValues = false;
     this.forecastKeys = _.filter(this.data, {
       'isForecast': true
@@ -47,7 +54,7 @@ class BarChart {
     }
 
 
-    this.y = d3.scaleLinear().domain([minLimit, maxLimit]);
+    this.x = d3.scaleLinear().domain([minLimit, maxLimit]);
     this.svg = d3.select(`#${id}`);
     this.g = this.svg.append("g")
       .attr("transform", "translate(" + MARGIN.left + "," + MARGIN.top + ")");
@@ -110,7 +117,9 @@ class BarChart {
       .attr("height", (d) => {
         return Math.abs(yOrigin - this.y(d.value));
       })
-      .style("fill", (d) => {return this.getColor(d.key)});
+      .style("fill", (d) => {
+        return this.getColor(d.key)
+      });
 
     // UPDATE
     // bars.attr("x", (d) => {
@@ -136,6 +145,11 @@ class BarChart {
       .attr("class", "bar")
       .attr("text-anchor", "middle")
       .style("font-size", "12px")
+      .style("font-weight", (d) => {
+        if(d.key.toString().localeCompare("total") != -1){
+          return "bold";
+        }
+      })
       .style("fill", "DarkSlateGrey")
       .attr("x", (d) => {
         return this.x(d.key) + (this.x.bandwidth() / 2);
@@ -144,7 +158,11 @@ class BarChart {
         return this.y(d.value) - 5;
       })
       .text((d) => {
-        return this.kFormatter(Math.round(Number(d.value)));
+        if(d.key.toString().localeCompare("total") != -1){
+          return this.kFormatter(this.data.map(item => item.value).reduce((prev, next) => prev + next));
+        } else {
+          return this.kFormatter(Math.round(Number(d.value)));
+        }
       });
 
     // EXIT
@@ -174,8 +192,7 @@ class BarChart {
   }
 
   getColor(key) {
-    console.log(this.forecastKeys);
-    if(this.forecastKeys.indexOf(key) != -1){
+    if (this.forecastKeys.indexOf(key) != -1) {
       return "DarkGrey";
     } else {
       return "DarkSlateGrey";

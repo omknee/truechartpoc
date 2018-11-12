@@ -192,7 +192,6 @@ class BarChart {
   }
 
   getColor(key) {
-    console.log(this.forecastKeys);
     if (this.forecastKeys.indexOf(key) != -1) {
       return "DarkGrey";
     } else {
