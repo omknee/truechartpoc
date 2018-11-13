@@ -74,7 +74,7 @@ class BarChart {
     const xOrigin = this.bothPositiveAndNegativeValues ? width / 2 : 1;
 
     this.svg.append("text")
-      .attr("x", MARGIN.left * 2)
+      .attr("x", MARGIN.lef)
       .attr("y", MARGIN.top / 4)
       .attr("text-anchor", "middle")
       .style("font-size", "16px")
