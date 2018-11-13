@@ -5,20 +5,30 @@
   <meta charset="UTF-8">
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>D3 test charts</title>
+  <title>Omknee - TrueChart - PoC</title>
   <link rel="stylesheet" type="text/css" href="main.css">
 </head>
 
 <body>
+  <div class="header">
+    <img class="header-logo" src="https://image.ibb.co/gLgrzf/Logo-white.png" />
+    <span class="header-title">Omknee - TrueChart PoC</span>
+  </div>
   <div id="main-container">
-    <div id="yearly-sales-by-category-container">
+    <div class="charts-header">
+      <h4>Welcome to the Omknee - TrueChart Proof of Concept</h4>
+      <a class="charts-selector" id="selector-1">Chart 1</a>
+      <a class="charts-selector" id="selector-2">Chart 2</a>
+      <a class="charts-selector" id="selector-3">Chart 3</a>
+    </div>
+    <div class="chart-container" id="yearly-sales-by-category-container">
       <h1>Yearly Sales by Category</h1>
     </div>
-    <div id="total-sales-by-month-container">
+    <div class="chart-container" id="total-sales-by-month-container">
       <h1>Total Sales by Month (2012)</h1>
     </div>
-    <div id="total-sales-year-by-category-container">
-      <h1>Total Sales by Category (2012)</h1>
+    <div class="chart-container" id="total-sales-year-by-category-container">
+      <h1>Total Sales by Month (2012)</h1>
     </div>
   </div>
   <script type="text/javascript" src="bundle.js"></script>

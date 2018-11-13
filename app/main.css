@@ -4,8 +4,45 @@ html {
   margin: 0;
 }
 
+h1, h2, h3, h4, h5, p, span, a {
+  font-family: Tahoma, Verdana, Segoe, sans-serif;
+  font-style: normal;
+  font-variant: normal;
+}
+
 text {
   font-family: sans-serif;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  width: 100%;
+  height: 50px;
+  background-color: #383838;
+}
+
+.header>.header-title {
+  margin-left: 10px;
+  font-size: 16pt;
+  color: white;
+  font-weight: bold;
+}
+
+.charts-header {
+  text-align: center;
+}
+
+.charts-selector {
+  cursor: pointer;
+  font-size: 18px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+.chart-container {
+  text-align: center;
 }
 
 .tick>line {

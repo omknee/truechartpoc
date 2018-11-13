@@ -74,7 +74,7 @@ class BarChart {
     const xOrigin = this.bothPositiveAndNegativeValues ? width / 2 : 1;
 
     this.svg.append("text")
-      .attr("x", MARGIN.lef)
+      .attr("x", MARGIN.left)
       .attr("y", MARGIN.top / 4)
       .attr("text-anchor", "middle")
       .style("font-size", "16px")
@@ -171,6 +171,8 @@ class BarChart {
     bars.exit()
       .remove();
 
+    //Hide
+    document.getElementById(this.id).parentElement.style.display = 'none';
   }
 
   getKeys(data) {

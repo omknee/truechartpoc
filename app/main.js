@@ -7,8 +7,6 @@ import HorizontalBar from './HorizontalBarChart';
 
 require('./main.css'); // will build CSS from SASS 3 file
 
-// const chartWidth = 400;
-// const chartHeight = 300;
 
 const yearlySalesByCategoryContainer = document.getElementById("yearly-sales-by-category-container");
 const totalSalesByMonth = document.getElementById("total-sales-by-month-container");
@@ -60,7 +58,7 @@ d3.csv("./data/data.csv", (d) => {
       });
     });
     chartData = _.sortBy(chartData, cD => cD.key);
-    window.addEventListener('retotalSalesByMonthsize', VerticalBarChart(newChart.id, chartData, titleText));
+    window.addEventListener('resize', VerticalBarChart(newChart.id, chartData, titleText));
   });
 
   //Sales/Year Chart (2012)
@@ -115,3 +113,27 @@ d3.csv("./data/data.csv", (d) => {
   });
   window.addEventListener('resize', HorizontalBar(chart2Element.id, chart2Data, "Sales - 2012"));
 });
+
+
+document.body.onclick = function(ev) {
+  if (ev.target.getAttribute("class") == "charts-selector") {
+    var x = document.getElementsByClassName("chart-container");
+    var i;
+    for (i = 0; i < x.length; i++) {
+      x[i].style.display = "none";
+    }
+    switch (ev.target.id) {
+      case "selector-1":
+        document.getElementById("yearly-sales-by-category-container").style.display = "block";
+        break;
+      case "selector-2":
+        document.getElementById("total-sales-by-month-container").style.display = "block";
+        break;
+      case "selector-3":
+        document.getElementById("total-sales-year-by-category-container").style.display = "block";
+        break;
+      default:
+
+    }
+  }
+};

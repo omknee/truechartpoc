@@ -19,6 +19,9 @@ const MARGIN = {
 // ES6 class
 class BarChart {
   constructor(id, data, titleText, hasTotal = true) {
+    //Show
+    document.getElementById(id).parentElement.style.display = 'block';
+
     this.id = id;
     this.data = data;
     this.titleText = titleText;
@@ -169,6 +172,9 @@ class BarChart {
     // EXIT
     bars.exit()
       .remove();
+
+    //Hide
+    document.getElementById(this.id).parentElement.style.display = 'none';
 
   }
 
