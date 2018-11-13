@@ -4,7 +4,7 @@ const MARGIN = {
   top: 50,
   right: 40,
   bottom: 40,
-  left: 60
+  left: 100
 };
 // const PADDING = {
 //   top: 60,
@@ -29,7 +29,7 @@ class BarChart {
       });
     }
 
-    this.x = d3.scaleBand().domain(this.getKeys(data)).padding(0.25);
+    this.y = d3.scaleBand().domain(this.getKeys(data)).padding(0.2);
     this.bothPositiveAndNegativeValues = false;
     this.forecastKeys = _.filter(this.data, {
       'isForecast': true
@@ -50,11 +50,10 @@ class BarChart {
     }
     if (minValue < 0 && maxValue > 0) {
       this.bothPositiveAndNegativeValues = true;
-      svgElement.setAttribute("height", svgElement.clientHeight * 2);
+      svgElement.setAttribute("width", svgElement.clientWidth * 2);
     }
 
-
-    this.y = d3.scaleLinear().domain([minLimit, maxLimit]);
+    this.x = d3.scaleLinear().domain([minLimit, maxLimit]);
     this.svg = d3.select(`#${id}`);
     this.g = this.svg.append("g")
       .attr("transform", "translate(" + MARGIN.left + "," + MARGIN.top + ")");
@@ -64,13 +63,15 @@ class BarChart {
 
   draw() {
     this.g.append("g")
-      .attr("class", "axis axis--x");
+      .attr("class", "axis axis--y");
 
     const bounds = this.svg.node().getBoundingClientRect(),
       width = bounds.width - MARGIN.left - MARGIN.right,
       height = bounds.height - MARGIN.top - MARGIN.bottom;
 
-    const yOrigin = this.bothPositiveAndNegativeValues ? height / 2 : height;
+
+    // const yOrigin = this.bothPositiveAndNegativeValues ? height / 2 : height;
+    const xOrigin = this.bothPositiveAndNegativeValues ? width / 2 : 1;
 
     this.svg.append("text")
       .attr("x", MARGIN.left * 2)
@@ -79,21 +80,21 @@ class BarChart {
       .style("font-size", "16px")
       .text(this.titleText);
     this.svg.append("text")
-      .attr("y", yOrigin / 2)
-      .attr("x", (MARGIN.left / 2) / 2)
+      .attr("y", height + MARGIN.top)
+      .attr("x", width / 2)
       .attr("dy", "0.71em")
       .text("Sales");
 
 
-    this.x.rangeRound([0, width]);
-    this.y.rangeRound([yOrigin, 0]);
+    this.y.rangeRound([0, height]);
+    this.x.rangeRound([xOrigin, width]);
 
-    this.g.select(".axis--x")
-      .attr("transform", "translate(0," + yOrigin + ")")
-      .call(d3.axisBottom(this.x));
+    this.g.select(".axis--y")
+      .attr("transform", "translate(0," + xOrigin + ")")
+      .call(d3.axisLeft(this.y));
 
-    // g.select(".axis--y")
-    //   .call(d3.axisLeft(y).ticks(10, "%"));
+    // this.g.select(".axis--y")
+    //   .call(d3.axisLeft(this.y).ticks(10, "%"));
 
     const bars = this.g.selectAll(".bar")
       .data(this.data);
@@ -103,20 +104,20 @@ class BarChart {
     bars
       .enter().append("rect")
       .attr("class", "bar")
-      .attr("x", (d) => {
-        return this.x(d.key);
-      })
       .attr("y", (d) => {
-        if (d.value >= 0) {
-          return this.y(d.value)
+        return this.y(d.key);
+      })
+      .attr("x", (d) => {
+        return xOrigin;
+      })
+      .attr("width", (d) => {
+        if (d.key.search(new RegExp("total", "i")) == -1) {
+          return Math.abs(this.x(d.value));
         } else {
-          return yOrigin
-        };
+          return 0;
+        }
       })
-      .attr("width", this.x.bandwidth())
-      .attr("height", (d) => {
-        return Math.abs(yOrigin - this.y(d.value));
-      })
+      .attr("height", this.y.bandwidth())
       .style("fill", (d) => {
         return this.getFillColor(d.key)
       });
@@ -147,19 +148,19 @@ class BarChart {
       .attr("text-anchor", "middle")
       .style("font-size", "12px")
       .style("font-weight", (d) => {
-        if (d.key.toString().localeCompare("total") != -1) {
+        if (d.key.toString().search(new RegExp("total", "i")) != -1) {
           return "bold";
         }
       })
       .style("fill", "DarkSlateGrey")
-      .attr("x", (d) => {
-        return this.x(d.key) + (this.x.bandwidth() / 2);
-      })
       .attr("y", (d) => {
-        return this.y(d.value) - 5;
+        return (this.y(d.key) + (this.y.bandwidth() / 1.5));
+      })
+      .attr("x", (d) => {
+        return this.x(d.value) + this.y.bandwidth();
       })
       .text((d) => {
-        if (d.key.toString().localeCompare("total") != -1) {
+        if (d.key.toString().search(new RegExp("total", "i")) != -1) {
           return this.kFormatter(this.data.map(item => item.value).reduce((prev, next) => prev + next));
         } else {
           return this.kFormatter(Math.round(Number(d.value)));

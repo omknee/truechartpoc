@@ -147,7 +147,7 @@ class BarChart {
       .attr("text-anchor", "middle")
       .style("font-size", "12px")
       .style("font-weight", (d) => {
-        if (d.key.toString().localeCompare("total") != -1) {
+        if (d.key.toString().search(new RegExp("total", "i")) != -1) {
           return "bold";
         }
       })
@@ -159,7 +159,7 @@ class BarChart {
         return this.y(d.value) - 5;
       })
       .text((d) => {
-        if (d.key.toString().localeCompare("total") != -1) {
+        if (d.key.toString().search(new RegExp("total", "i")) != -1) {
           return this.kFormatter(this.data.map(item => item.value).reduce((prev, next) => prev + next));
         } else {
           return this.kFormatter(Math.round(Number(d.value)));

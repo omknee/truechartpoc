@@ -3,7 +3,7 @@ import _ from 'lodash';
 import moment from 'moment';
 
 import VerticalBarChart from './VerticalBarChart';
-import HorizontalBar from './VerticalBarChart';
+import HorizontalBar from './HorizontalBarChart';
 
 require('./main.css'); // will build CSS from SASS 3 file
 
@@ -12,6 +12,7 @@ require('./main.css'); // will build CSS from SASS 3 file
 
 const yearlySalesByCategoryContainer = document.getElementById("yearly-sales-by-category-container");
 const totalSalesByMonth = document.getElementById("total-sales-by-month-container");
+const totalSalesByCategory = document.getElementById("total-sales-year-by-category-container");
 
 let categoriesIds = [];
 
@@ -61,6 +62,7 @@ d3.csv("./data/data.csv", (d) => {
     chartData = _.sortBy(chartData, cD => cD.key);
     window.addEventListener('retotalSalesByMonthsize', VerticalBarChart(newChart.id, chartData, titleText));
   });
+
   //Sales/Year Chart (2012)
   const chart1Year = "2012";
   let chart1Element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
@@ -88,14 +90,28 @@ d3.csv("./data/data.csv", (d) => {
     });
   });
   window.addEventListener('resize', VerticalBarChart(chart1Element.id, chart1Data, "Sales - 2012"));
-  //Sales/Year Chart (2012)
-  // let chart1Element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  // chart2Element.id = "total-sales-by-month-" + chart1Year;
-  // chart2Element.setAttribute('width', '700px');
-  // chart2Element.setAttribute('height', '400px');
-  // totalSalesByMonth.append(chart2Element);
-  // const chart2Categories = _.uniq(_.map(dataFromYear, 'categoryName'));
-  // let chart2Data = [];
-  //
-  // window.addEventListener('resize', VerticalBarChart(chart2Element.id, chart1Data, "Sales - 2012"));
+
+  //Sales/Category Chart (2012)
+  let chart2Element = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  chart2Element.id = "total-sales-by-category-" + chart1Year;
+  chart2Element.setAttribute('width', '700px');
+  chart2Element.setAttribute('height', '400px');
+  totalSalesByCategory.append(chart2Element);
+  const chart2Categories = _.uniq(_.map(dataFromYear, 'categoryName'));
+  let chart2Data = [];
+  chart2Categories.forEach((categoryName, index) => {
+    const dataFromCategory = _.filter(dataFromYear, {
+      'categoryName': categoryName
+    });
+    let sum = 0;
+    dataFromCategory.forEach((cYD) => {
+      sum = sum + Number(cYD.sales);
+    });
+    chart2Data.push({
+      key: categoryName,
+      value: Number(sum),
+      isForecast: false
+    });
+  });
+  window.addEventListener('resize', HorizontalBar(chart2Element.id, chart2Data, "Sales - 2012"));
 });
